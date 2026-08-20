@@ -28,7 +28,7 @@ def enumerate_platforms(exclude_hwnds, work_area):
 
     def _on_window(hwnd, _):
         if hwnd in exclude_hwnds:
-            return
+            return True
         p = platform_from_window(
             title=win32gui.GetWindowText(hwnd),
             visible=bool(win32gui.IsWindowVisible(hwnd)),
@@ -38,6 +38,7 @@ def enumerate_platforms(exclude_hwnds, work_area):
         )
         if p:
             platforms.append(p)
+        return True
 
     win32gui.EnumWindows(_on_window, None)
     return platforms

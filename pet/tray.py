@@ -48,5 +48,6 @@ def build_tray(app, on_coffee, on_cancel_overtime, on_refund_salary,
     menu.addAction(quit_action)
 
     tray.setContextMenu(menu)
+    tray._menu = menu  # 保留引用，防止 Python GC 回收菜单
     tray.show()
     return tray

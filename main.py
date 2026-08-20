@@ -29,7 +29,7 @@ def main():
         if not window.isVisible():
             bubble.hide()
 
-    build_tray(
+    tray = build_tray(
         app,
         on_coffee=window.command_coffee,
         on_cancel_overtime=lambda: brain.command_special("cancel_overtime"),
@@ -38,6 +38,7 @@ def main():
         on_toggle_visible=toggle_visible,
         on_quit=app.quit,
     )
+    window.set_context_menu(tray.contextMenu())
 
     window.show()
     sys.exit(app.exec())

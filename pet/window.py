@@ -50,6 +50,7 @@ class PetWindow(QWidget):
         self._dragging = False
         self._press_pos = QPoint()
         self._press_offset = QPoint()
+        self._context_menu = None
 
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
@@ -60,6 +61,10 @@ class PetWindow(QWidget):
     def command_coffee(self):
         self._coffee_target_x = float(QCursor.pos().x())
         self.brain.command_coffee()
+
+    def set_context_menu(self, menu):
+        """桌宠本体右键弹出与托盘相同的菜单。"""
+        self._context_menu = menu
 
     # ---- 主循环 ----
     def _tick(self):
@@ -176,6 +181,9 @@ class PetWindow(QWidget):
 
     # ---- 鼠标 ----
     def mousePressEvent(self, event):
+        if event.button() == Qt.RightButton and self._context_menu is not None:
+            self._context_menu.exec(event.globalPosition().toPoint())
+            return
         if event.button() == Qt.LeftButton:
             self._press_pos = event.globalPosition().toPoint()
             self._press_offset = self._press_pos - self.pos()

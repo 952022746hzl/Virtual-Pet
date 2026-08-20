@@ -126,12 +126,12 @@ class PetWindow(QWidget):
 
     def _tick_fall(self):
         body = self._body()
-        landing_vy = body.vy
         after, landed = step_fall(body, self.platforms, TICK)
         self.x_pos, self.y_pos, self.vy = after.x, after.y, after.vy
         if landed:
+            impact_vy = after.vy
             self.vy = 0.0
-            self.brain.on_land(hard=landing_vy >= HARD_LANDING_SPEED)
+            self.brain.on_land(hard=impact_vy >= HARD_LANDING_SPEED)
 
     def _refresh_platforms(self):
         self._platform_clock += TICK

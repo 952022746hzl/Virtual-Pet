@@ -120,7 +120,12 @@ class PetWindow(QWidget):
 
         new_x = self.x_pos + dx
         if new_x + FRAME_SIZE / 2 > support.right or new_x + FRAME_SIZE / 2 < support.left:
-            self.brain.facing = -self.brain.facing  # 撞到平台边缘掉头
+            if state is State.COFFEE and self._coffee_target_x is not None:
+                # 咖啡目标点落在平台边缘之外：视为已到达，避免原地折返卡死。
+                self._coffee_target_x = None
+                self.brain.on_coffee_arrived()
+            else:
+                self.brain.facing = -self.brain.facing  # 撞到平台边缘掉头
         else:
             self.x_pos = new_x
 
@@ -132,13 +137,23 @@ class PetWindow(QWidget):
             impact_vy = after.vy
             self.vy = 0.0
             self.brain.on_land(hard=impact_vy >= HARD_LANDING_SPEED)
+        elif after.foot_y > self.ground.top:
+            # 安全网：脚底已越过地面平台却仍未落地（例如水平方向脱离了地面
+            # 平台的支撑范围），说明会永坠不止，强制吸附回地面。
+            min_x = self.ground.left - FRAME_SIZE / 2
+            max_x = self.ground.right - FRAME_SIZE / 2
+            self.x_pos = max(min_x, min(max_x, self.x_pos))
+            self.y_pos = self.ground.top - FRAME_SIZE
+            self.vy = 0.0
+            self.brain.on_land(hard=False)
 
     def _refresh_platforms(self):
         self._platform_clock += TICK
         if self._platform_clock >= PLATFORM_REFRESH:
             self._platform_clock = 0.0
             hwnd = int(self.winId())
-            wins = enumerate_platforms({hwnd}, self.work_area)
+            scale = self.devicePixelRatio() or QGuiApplication.primaryScreen().devicePixelRatio()
+            wins = enumerate_platforms({hwnd}, self.work_area, scale=scale)
             self.platforms = [self.ground] + wins
 
     def _body(self):
@@ -175,7 +190,11 @@ class PetWindow(QWidget):
             self.brain.on_drag_start()
         if self._dragging:
             new_pos = pos - self._press_offset
-            self.x_pos, self.y_pos = float(new_pos.x()), float(new_pos.y())
+            new_x = float(new_pos.x())
+            min_x = self.ground.left - FRAME_SIZE / 2
+            max_x = self.ground.right - FRAME_SIZE / 2
+            new_x = max(min_x, min(max_x, new_x))
+            self.x_pos, self.y_pos = new_x, float(new_pos.y())
             self._sync_pos()
 
     def mouseReleaseEvent(self, event):

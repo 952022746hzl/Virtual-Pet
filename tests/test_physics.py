@@ -27,9 +27,11 @@ def test_lands_on_platform_and_snaps():
 
 def test_lands_on_highest_crossed_platform():
     window_top = Platform(left=0, right=1920, top=500)
-    body = Body(x=100, y=500 - 128 - 2, vy=1500)  # 一个 tick 会同时越过两个平台
-    after, landed = step_fall(body, [GROUND, window_top], dt=0.033)
+    lower_top = Platform(left=0, right=1920, top=530)
+    body = Body(x=100, y=500 - 128 - 2, vy=1500)  # 一个 tick 扫掠区间 ≈[498, 550]，同时越过 500 和 530
+    after, landed = step_fall(body, [GROUND, lower_top, window_top], dt=0.033)
     assert landed == window_top
+    assert after.foot_y == window_top.top
 
 
 def test_misses_platform_when_not_horizontally_over_it():

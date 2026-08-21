@@ -23,7 +23,7 @@ def _make_icon():
 def build_tray(app, on_coffee, on_cancel_overtime, on_refund_salary,
                on_chase_toggled, on_toggle_visible, on_quit):
     tray = QSystemTrayIcon(_make_icon(), app)
-    tray.setToolTip("马斯克老板桌宠")
+    tray.setToolTip("老板桌宠")
     menu = QMenu()
 
     for label, handler in [("要杯咖啡", on_coffee),

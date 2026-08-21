@@ -1,4 +1,4 @@
-"""马斯克老板桌宠 —— 入口。"""
+"""老板桌宠 —— 入口。"""
 import signal
 import sys
 from pathlib import Path

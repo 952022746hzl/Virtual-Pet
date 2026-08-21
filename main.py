@@ -23,7 +23,7 @@ def main():
     signal.signal(signal.SIGINT, lambda *_: app.quit())
 
     quotes = load_quotes(ROOT / "quotes.json")
-    sprites = SpriteSet(ROOT / "assets" / "musk")
+    sprites = SpriteSet(ROOT / "assets" / "boss")
     brain = PetBrain()
     bubble = Bubble()
     window = PetWindow(brain, sprites, quotes, bubble)
